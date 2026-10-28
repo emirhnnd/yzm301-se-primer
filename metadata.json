@@ -1,0 +1,8 @@
+{
+  "name": "SE Primer: LabLink Krizi",
+  "description": "Yazılım mühendisliği öğrencileri için mobil öncelikli hastane laboratuvar krizi karar simülasyonu ve Sokratik AI Tutor.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
