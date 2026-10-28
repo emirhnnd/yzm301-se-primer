@@ -1,0 +1,220 @@
+<!DOCTYPE html><html lang="tr"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SE Primer: LabLink Krizi - Sonuç (Ekran 3/3)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #F4F7F6;
+      color: #12201F;
+      margin: 0;
+      padding: 0;
+    }
+    .font-mono {
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    /* Stepper line */
+    .step-connector {
+      height: 2px;
+      background-color: #1B6B3A;
+      flex-grow: 1;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#F4F7F6] flex justify-center py-6 px-3">
+  <!-- Mobile Container (390px max-width) -->
+  <main class="w-full max-w-[390px] flex flex-col gap-4">
+
+    <!-- Top Navigation / Micro Header -->
+    <header class="flex items-center justify-between px-1 py-1">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-semibold tracking-wider text-[#4A5F5C] uppercase">SE PRIMER</span>
+        <span class="text-xs text-[#4A5F5C] opacity-60">·</span>
+        <span class="text-xs text-[#4A5F5C]">Sonuç (Aşama 3/3)</span>
+      </div>
+      <div class="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-[#E7F7F5] text-[#0B6E69] border border-[#C9D6D3]">
+        SIM-SONLANDI
+      </div>
+    </header>
+
+    <!-- Main Success Ending Card -->
+    <section class="bg-white border border-[#C9D6D3] rounded-[12px] p-5 flex flex-col gap-4">
+      
+      <!-- Ending Status Badge -->
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#DDF3E4] border border-[#BCE7C7] text-[#1B6B3A]">
+          <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+          </svg>
+          <span class="text-xs font-bold tracking-wider uppercase font-mono">SON A · KONTROL ALTINDA</span>
+        </div>
+      </div>
+
+      <!-- Clock & Resolution Notice -->
+      <div class="flex flex-col gap-1 border-b border-[#E1ECE9] pb-4">
+        <div class="flex items-baseline gap-3">
+          <span class="font-mono text-[40px] font-semibold tracking-tight text-[#12201F] leading-none">08:15</span>
+          <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-[#DDF3E4] text-[#1B6B3A] border border-[#BCE7C7]">15 DK ERKEN</span>
+        </div>
+        <p class="text-[15px] font-medium text-[#12201F] leading-snug mt-1">
+          Akasya Tıp Merkezi 08:30'da zamanında açıldı.
+        </p>
+        <p class="text-xs text-[#4A5F5C] leading-relaxed">
+          300 poliklinik hastası yanlış test sonucu görmeden kuyruk stabilize edildi, eski güvenli eşleştirme devrede.
+        </p>
+      </div>
+
+      <!-- Section: Senin Yolun -->
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-[#4A5F5C] tracking-wide uppercase">Senin Yolun</span>
+          <span class="text-[11px] font-mono text-[#1B6B3A] font-medium">3/3 Başarılı</span>
+        </div>
+
+        <div class="flex items-start justify-between relative px-2 pt-1 pb-2">
+          <!-- Step 1 -->
+          <div class="flex flex-col items-center text-center z-10 w-20">
+            <div class="w-8 h-8 rounded-full bg-[#1B6B3A] text-white font-mono text-xs font-semibold flex items-center justify-center border-2 border-white shadow-none">
+              A
+            </div>
+            <span class="text-[11px] font-semibold text-[#12201F] mt-1.5 leading-tight">K1 Mimari</span>
+            <div class="mt-1 flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-[#DDF3E4] text-[#1B6B3A] font-mono text-[10px] font-bold">
+              [N]
+            </div>
+          </div>
+
+          <!-- Connector 1-2 -->
+          <div class="step-connector"></div>
+
+          <!-- Step 2 -->
+          <div class="flex flex-col items-center text-center z-10 w-20">
+            <div class="w-8 h-8 rounded-full bg-[#1B6B3A] text-white font-mono text-xs font-semibold flex items-center justify-center border-2 border-white shadow-none">
+              A
+            </div>
+            <span class="text-[11px] font-semibold text-[#12201F] mt-1.5 leading-tight">K2 Test</span>
+            <div class="mt-1 flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-[#DDF3E4] text-[#1B6B3A] font-mono text-[10px] font-bold">
+              [N]
+            </div>
+          </div>
+
+          <!-- Connector 2-3 -->
+          <div class="step-connector"></div>
+
+          <!-- Step 3 -->
+          <div class="flex flex-col items-center text-center z-10 w-20">
+            <div class="w-8 h-8 rounded-full bg-[#1B6B3A] text-white font-mono text-xs font-semibold flex items-center justify-center border-2 border-white shadow-none">
+              A
+            </div>
+            <span class="text-[11px] font-semibold text-[#12201F] mt-1.5 leading-tight">K3 KVKK</span>
+            <div class="mt-1 flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-[#DDF3E4] text-[#1B6B3A] font-mono text-[10px] font-bold">
+              [N]
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: Karar Özeti -->
+      <div class="flex flex-col gap-2.5 pt-1 border-t border-[#E1ECE9]">
+        <span class="text-xs font-semibold text-[#4A5F5C] tracking-wide uppercase">Karar Özeti</span>
+
+        <!-- Row 1 -->
+        <div class="bg-[#F8FAF9] border border-[#D5E1DE] rounded-[8px] p-2.5 flex flex-col gap-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-[#0B6E69]">K1 · Mimari Müdahale</span>
+            <span class="text-[11px] font-mono font-medium px-1.5 py-0.5 rounded bg-[#D7EEEB] text-[#0B6E69]">Seçim A</span>
+          </div>
+          <p class="text-[13px] font-medium text-[#12201F] leading-snug">
+            Özellik bayrağıyla yeni eşleştirmeyi kapat, eski sisteme dön.
+          </p>
+          <p class="text-xs text-[#4A5F5C] leading-snug">
+            <span class="font-medium text-[#12201F]">Neden oldu:</span> Canlıda acele yama yapmaktansa kanıtlanmış güvenli sürüme anında dönüldü, veri kirlenmesi durduruldu.
+          </p>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="bg-[#F8FAF9] border border-[#D5E1DE] rounded-[8px] p-2.5 flex flex-col gap-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-[#0B6E69]">K2 · Numune Doğrulama</span>
+            <span class="text-[11px] font-mono font-medium px-1.5 py-0.5 rounded bg-[#D7EEEB] text-[#0B6E69]">Seçim A</span>
+          </div>
+          <p class="text-[13px] font-medium text-[#12201F] leading-snug">İki hastanın aynı anda sorgulandığı bir regresyon testi yazdın ve koştun.</p>
+          <p class="text-xs text-[#4A5F5C] leading-snug"><span class="font-medium text-[#12201F]">Neden oldu:</span> Test, yanlış eşleşmenin tekrar etmediğini kanıtladı. Elle bakmak her durumu yakalamaz.</p>
+        </div>
+
+        <!-- Row 3 -->
+        <div class="bg-[#F8FAF9] border border-[#D5E1DE] rounded-[8px] p-2.5 flex flex-col gap-1">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-[#0B6E69]">K3 · Hasta İletişimi</span>
+            <span class="text-[11px] font-mono font-medium px-1.5 py-0.5 rounded bg-[#D7EEEB] text-[#0B6E69]">Seçim A</span>
+          </div>
+          <p class="text-[13px] font-medium text-[#12201F] leading-snug">Olayı kayda aldın, etkilenen 2 hastayı ve kuruma bildirim sürecini başlattın, loglardaki kimlikleri maskeledin.</p>
+          <p class="text-xs text-[#4A5F5C] leading-snug"><span class="font-medium text-[#12201F]">Neden oldu:</span> Sağlık verisi özel nitelikli veridir. İhlalde 72 saat içinde Kurul'a bildirim gerekir.</p>
+        </div>
+      </div>
+
+      <!-- Section: Sonraki Ders -->
+      <div class="bg-[#E8E9FA] border border-[#D0D2F4] rounded-[10px] p-3 flex items-start gap-2.5">
+        <div class="w-6 h-6 rounded bg-[#3B3F8F] text-white flex items-center justify-center flex-shrink-0 mt-0.5">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+          </svg>
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <span class="text-[11px] font-mono font-semibold uppercase text-[#3B3F8F] tracking-wide">Sonraki Ders</span>
+          <span class="text-[13px] font-bold text-[#1F235A]">KVKK: Veri ihlali bildiriminde 72 saatlik süre</span>
+          <p class="text-xs text-[#3B3F8F] leading-snug">
+            Sağlık verisi eşleşme hatalarında Kurul'a ve ilgililere bildirim yükümlülüğü simülasyonu.
+          </p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col gap-2 pt-1">
+        <button class="w-full h-12 bg-[#0B6E69] text-white text-[15px] font-semibold rounded-[8px] flex items-center justify-center gap-2 hover:bg-[#095955] active:scale-[0.99] transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          Tekrar oyna
+        </button>
+
+        <button class="w-full h-11 bg-transparent text-[#0B6E69] text-sm font-semibold rounded-[8px] flex items-center justify-center hover:bg-[#E7F7F5] transition">
+          Farklı yolu dene
+        </button>
+      </div>
+
+    </section>
+
+    <!-- Alternate Variant: Kötü Son / Bad Ending Frame -->
+    <aside class="bg-white border border-[#F3C5C2] rounded-[12px] p-3.5 flex flex-col gap-2">
+      <div class="flex items-center justify-between">
+        <span class="text-[10px] font-mono font-semibold tracking-wider text-[#4A5F5C] uppercase">Alternatif Senaryo Önizlemesi</span>
+        <span class="text-[10px] font-mono text-[#B3261E] bg-[#FDE7E5] px-1.5 py-0.5 rounded font-bold">[L] KRİTİK</span>
+      </div>
+
+      <!-- Bad Ending Badge -->
+      <div class="flex items-center gap-2 px-3 py-2 rounded-[8px] bg-[#FDE7E5] border border-[#F6BDB8] text-[#B3261E]">
+        <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+        </svg>
+        <span class="text-xs font-bold tracking-wider uppercase font-mono">SON B · GİZLİ BOMBA</span>
+      </div>
+
+      <div class="flex items-baseline gap-2 pt-0.5">
+        <span class="font-mono text-lg font-semibold text-[#12201F]">07:45</span>
+        <span class="text-xs text-[#B3261E] font-medium">Poliklinik açılışında kriz büyüdü</span>
+      </div>
+
+      <p class="text-xs text-[#4A5F5C] leading-snug">Üçüncü bir hasta durumu fark edip şikâyet etti. Olay gizlendiği için KVKK ihlali sürüyor.</p>
+    </aside>
+
+  </main>
+
+
+
+
+</body></html>
