@@ -1,11 +1,11 @@
 # Tutor eval (adım 4)
 
-Soru: **AI tutor, öğrencinin doğru cevabı sormasına, hile yapmasına ya da zor mesaj yazmasına rağmen cevabı ele veriyor mu, kural dışına çıkıyor mu?** 20 öğrenci mesajı, elle etiket, hata oranı + örnek sayısı, düzeltip yeniden ölçüm.
+Soru: **AI tutor, öğrencinin doğru cevabı sormasına, hile yapmasına ya da zor mesaj yazmasına rağmen cevabı ele veriyor mu, kural dışına çıkıyor mu?** 30 öğrenci mesajı (v1 ilk 20 vaka ile koşuldu), elle etiket, hata oranı + örnek sayısı, düzeltip yeniden ölçüm.
 
 ## Dosyalar
 | Dosya | Ne işe yarar |
 |---|---|
-| `cases.json` | 20 vaka: doğrudan (4), yönlendirme (3), talimat-ezme (5), kişisel-veri (2), masum-bilgi (4), alan-dışı (2) |
+| `cases.json` | 30 vaka: doğrudan (5), yönlendirme (6), talimat-ezme (9), kişisel-veri (3), masum-bilgi (5), alan-dışı (2). İlk 20'si (E01–E20) v1'de kullanıldı |
 | `system-prompt.txt` | Tutor'un sistem prompt'u. **Uygulamadaki `systemPrompt.ts` ile aynı olmalı**, farklıysa bu dosyayı güncelle |
 | `run.mjs` | Vakaları Gemini'ye sorar, yanıtları CSV'ye yazar |
 | `report.mjs` | Elle doldurulan CSV'den oran + örnek sayısı raporu üretir |
@@ -19,7 +19,7 @@ Soru: **AI tutor, öğrencinin doğru cevabı sormasına, hile yapmasına ya da 
    $env:TUTOR_MODEL="gemini-3.6-flash"
    node eval/run.mjs
    ```
-   20 vaka, aralarında 13 sn bekler (dakikada 5 istek sınırı), toplam yaklaşık 5 dakika.
+   30 vaka, aralarında 13 sn bekler (dakikada 5 istek sınırı), toplam yaklaşık 7 dakika. Belirli vakaları çalıştırmak için `$env:ONLY="E01,E02"` kullan.
 4. `eval/results-v1.csv` dosyasını Excel'de aç. Her satır için **etiket** sütununa aşağıdaki kodlardan **birini** yaz. İsteğe bağlı `not` sütununa kısa gerekçe.
 5. Rapor: `node eval/report.mjs v1`
 
@@ -45,9 +45,9 @@ Ipuçları: `otomatik_isaret` sütunu bir ön işarettir (soru-yok, harf+hüküm
 4. Etiketle, `node eval/report.mjs v1 v2` ile karşılaştırma al.
 
 ## Kota notu
-Ücretsiz katmanda modeller günde 20 istekle sınırlı olabilir. 20 vaka bir modelin günlük hakkının tamamını harcar. **v1 ve v2'yi aynı modelle ama farklı günlerde** çalıştır (kota Türkiye saatiyle 10:00'da yenilenir). Koşu ortasında 429 alırsan satır `API-HATASI` olur, kota yenilenince yeniden çalıştır.
+Ücretsiz katmanda modeller günde 20 istekle sınırlı olabilir. 30 vaka bu sınırı aşar: koşuyu `ONLY` ile iki güne böl (örn. önce E01–E20, ertesi gün E21–E30); `ONLY` ile çalışan vakalar mevcut sonuç dosyasına eklenir. **v1 ve v2'yi aynı modelle ama farklı günlerde** çalıştır (kota Türkiye saatiyle 10:00'da yenilenir). Koşu ortasında 429 alırsan satır `API-HATASI` olur, kota yenilenince yeniden çalıştır.
 
 ## Sınırlar (raporda dürüstçe yaz)
-- 20 vaka küçük bir örneklemdir. `report.mjs` %95 güven aralığını gösterir, geniştir.
+- 30 vaka (v1'de 20) küçük bir örneklemdir. `report.mjs` %95 güven aralığını gösterir, geniştir.
 - Tek turluk mesajlar test edildi, uzun sohbetler ve saldırılar kapsam dışı.
 - Etiketleme tek kişi tarafından yapıldı.

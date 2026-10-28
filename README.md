@@ -16,7 +16,7 @@ Telefonda açılan kısa bir karar oyunu. Sen bir hastane laboratuvar sistemi (L
 | `spec.md` | Problem, senaryo, durum makinesi, 8 yolun tablosu, kişiselleştirme, tutor kuralları, kabul örnekleri |
 | `DESIGN.md`, `design/` | Google Stitch tasarım sistemi ("Clinical Diagnostic Paper") ve 3 ekran (giriş, sahne, son) |
 | `docs/` | Stitch prompt'ları, AI Studio'ya verilen uygulama prompt'u |
-| `app/` | AI Studio'dan alınan uygulama kodu (React + TypeScript) |
+| `src/`, `server.ts` | AI Studio'dan alınan uygulama kodu: React + TypeScript arayüz (`src/`), Gemini çağrılarını yapan Express sunucusu (`server.ts`) |
 | `eval/` | Tutor değerlendirmesi: vakalar, prompt'lar, çalıştırıcı, rapor |
 | `cypress/` | Uçtan uca testler |
 
@@ -35,7 +35,7 @@ Telefonda açılan kısa bir karar oyunu. Sen bir hastane laboratuvar sistemi (L
 5. **`?tutor=mock`:** Testler gerçek API'ye gitmez, sabit bir yanıt alır.
 
 ## Tutor değerlendirmesi
-`eval/` içinde 30 vaka var (doğrudan soru, yönlendirme, talimat ezme, kişisel veri, masum bilgi, alan dışı). Yanıtlar elle etiketlendi (OK, H1–H8), hata oranı ve örnek sayısı raporlandı. Ayrıntı: `eval/README.md`, sonuçlar `eval/report-*.md`.
+`eval/cases.json` içinde 30 vaka var: doğrudan soru (5), yönlendirme (6), talimat ezme (9), kişisel veri (3), masum bilgi (5), alan dışı (2). v1 ilk 20 vaka (E01–E20) ile koşuldu, sonra set 30'a genişletildi. Yanıtlar elle etiketlendi (OK, H1–H8), hata oranı ve örnek sayısı raporlandı. Ayrıntı: `eval/README.md`, sonuçlar `eval/report-*.md`.
 
 - **v1** (gemini-3.1-flash-lite, 20 vaka): 1/20 hatalı (%5, %95 güven aralığı %1–24). Hata: E05, tutor "hız odaklı yaklaşım süreyi etkileyebilir" diyerek bir seçeneğin bedeli olduğunu ima etti (H2).
 - **Düzeltme:** Prompt'a, seçeneklerin hızı/riski/sonucu hakkında hüküm ya da ima yasağı ve "haklı mıyım?" sorusuna nasıl yanıt verileceği eklendi.
@@ -53,7 +53,7 @@ npx cypress run
 ## Yapmadığım 3 özellik (bilerek)
 1. **Hesap ve ilerleme kaydı.** Gizlilik ve kapsam nedeniyle hiçbir şey saklanmıyor. Eksisi: öğrenci ilerlemesini, tekrar sayısını ya da hangi kararlarda zorlandığını göremiyor. Eklemek için KVKK aydınlatma metni ve açık rıza gerekirdi.
 2. **İkinci senaryo ve daha fazla karar.** Tek senaryo, 3 karar. Daha derin öğrenme için farklı alanlar (CI/CD, güvenlik açığı, performans) gerekir, ama sekiz yol ve test kapsamı katlanırdı.
-3. **Gerçek zamanlı tutor hafızası ve sesli arayüz.** Tutor her mesajı tek başına yanıtlıyor, sohbet geçmişini taşımıyor. Hem saldırı yüzeyi (uzun sohbette talimat ezme) hem kota maliyeti artacağı için bilerek yapmadım. Ayrıca sesli giriş ve ekran okuyucu için gelişmiş anlatım yok.
+3. **Kalıcı tutor hafızası ve sesli arayüz.** Tutor yalnızca o oturumdaki son 6 mesajı görür; uzun sohbet geçmişi tutulmaz, sayfa kapanınca her şey silinir ve önceki oyunlar hatırlanmaz. Hafızayı uzatmak hem saldırı yüzeyini (uzun sohbette talimat ezme) hem kota maliyetini artıracağı için bilerek sınırladım. Ayrıca sesli giriş ve ekran okuyucu için gelişmiş anlatım yok.
 
 ## Lisans / not
 Eğitim amaçlı ödev. Kurum ve hasta adları kurgusaldır.
