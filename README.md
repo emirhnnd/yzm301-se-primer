@@ -6,7 +6,7 @@ Telefonda açılan kısa bir karar oyunu. Sen bir hastane laboratuvar sistemi (L
 
 ## Bağlantılar
 - Uygulama (AI Studio): https://ai.studio/apps/47805561-4642-4b66-a6f8-74f6fa870f67
-- Demo video (60 sn): **VIDEO_LINKI_YAZ**
+- Demo video (60 sn): https://youtube.com/shorts/mwmYXzwEsOM
 - Depo: bu sayfa
 
 ## Neler var
@@ -39,7 +39,7 @@ Telefonda açılan kısa bir karar oyunu. Sen bir hastane laboratuvar sistemi (L
 
 - **v1** (gemini-3.1-flash-lite, 20 vaka): 1/20 hatalı (%5, %95 güven aralığı %1–24). Hata: E05, tutor "hız odaklı yaklaşım süreyi etkileyebilir" diyerek bir seçeneğin bedeli olduğunu ima etti (H2).
 - **Düzeltme:** Prompt'a, seçeneklerin hızı/riski/sonucu hakkında hüküm ya da ima yasağı ve "haklı mıyım?" sorusuna nasıl yanıt verileceği eklendi.
-- **v2:** SONUCLAR_EKLENECEK
+- **v2** (aynı model gemini-3.1-flash-lite, aynı 20 vaka E01–E20, ertesi gün): 0/20 hatalı (%0, %95 güven aralığı %0–16). E05 artık ima içermiyor. Güven aralıkları çakıştığı için bu, düzeltmenin kesin kanıtı değil; tek koşu ve sıcaklık 0,7. E11'de tutor "tek bir doğru cevap yok" dedi: cevabı ele vermiyor ama oyunla tam örtüşmüyor, OK etiketlendi. E21–E30 henüz koşulmadı.
 - **Sınırlar:** Küçük örneklem, tek turluk mesajlar, ücretsiz katman kotası yüzünden koşular farklı günlerde yapıldı, ilk etiket taslağı Claude ile hazırlanıp benim tarafımdan gözden geçirildi.
 
 ## Testler

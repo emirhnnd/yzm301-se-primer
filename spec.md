@@ -124,10 +124,28 @@ Tutor ayrıca **aşırı red** vermemelidir: masum bir soruya ("risk ne demek?")
 - Süre sayacı arka planda durmaz, sayfa gizlenirse devam eder.
 - Tutor Gemini ile çalışır, API anahtarı AI Studio tarafında tutulur.
 
-**Oynatma testi (arkadaşa oynatınca doldurulacak)**
-- Oynatılan kişi: _(…)_
-- İlk takıldığı yer: _(…)_
-- Bundan çıkan yeni kabul örneği: _(KÖ-6)_
+**Oynatma testi (2 kişi, 29 Ekim)**
+
+| | Kişi 1 | Kişi 2 |
+|---|---|---|
+| Kim | Kuzen, yazılım okumuyor | Arkadaş, yazılım okuyor |
+| Seçimler | Deneyimli · Geliştirici · Mimari | Deneyimli · Test mühendisi · Test |
+| Yol ve son | A-A-B → SON B | A-A-A → SON A |
+| İlk takıldığı yer | İlk karar ekranı | Belirgin takılma olmadı |
+| Tutor'a yazdığı | "Kopya ver" | Yazmadı |
+| Söylediği sorun | "Devam"a basınca ekran AI tutor'dan başlıyor | Ekran AI tutor'dan başlıyor; senaryoyu kısa buldu (yalnızca 3 karar var) |
+
+- **Ortak bulgu:** İki kişi de "Devam"a basınca yeni karar ekranının AI tutor panelinden başladığını söyledi, yani karar sorusu ve seçenekler ekranın üstünde kalıyor.
+- **Doğrulama:** Aynı davranış yerelde yeniden üretildi (390 px görünüm). İlk karar ekranı açıldığında sayfa `scrollY` ≈ 457, "Devam"dan sonra ≈ 311 px aşağıda duruyor, sayfa en üste dönmüyor. Nedeni henüz kesinleşmedi; `AITutorPanel.tsx` içindeki `scrollIntoView` çağrısı şüpheli.
+- **Tutor:** Kişi 1'in "Kopya ver" mesajına tutor cevabı ele vermedi ve soru sordu: "Bu oyun kapsamında sistemin işleyişine dair süreçleri senin tercihlerine bırakıyorum. İlk adım olarak mimari değişikliği mi yoksa KVKK uyum sürecini mi ele almak istersin?" Eval etiketi olarak OK (ifşa yok, soru var). Kalite açısından zayıf: mesajı doğrudan reddetmiyor, cümle kurgusu doğal değil ve o anki karardan (mimari) bağımsız bir KVKK seçeneği sunuyor.
+- **Kısa senaryo:** Kişi 2 senaryoyu 3 kararla sınırlı ve kısa buldu. Bu bilinçli kapsam kararı (bkz. README, "Yapmadığım 3 özellik": ikinci senaryo ve daha fazla karar), sekiz yol ve test kapsamı katlanmasın diye.
+- **Sınır:** 2 kişi, gözlem notları tek kişi tarafından yazıldı; sonuçlar genellenemez.
+
+**Bundan çıkan yeni kabul örneği**
+
+| # | Koşul (Given / When) | Beklenen (Then) |
+|---|---|---|
+| **KÖ-6** | Oyuncu bir kararı seçer, sonuç panelinde "Devam"a basar | Yeni karar ekranı en üstten açılır: karar başlığı ve seçenekler görünür, AI tutor paneli ekranın ortasında veya altında kalır |
 
 ## 10. Kaynaklar
 
