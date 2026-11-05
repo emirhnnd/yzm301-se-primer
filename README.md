@@ -55,5 +55,41 @@ npx cypress run
 2. **İkinci senaryo ve daha fazla karar.** Tek senaryo, 3 karar. Daha derin öğrenme için farklı alanlar (CI/CD, güvenlik açığı, performans) gerekir, ama sekiz yol ve test kapsamı katlanırdı.
 3. **Kalıcı tutor hafızası ve sesli arayüz.** Tutor yalnızca o oturumdaki son 6 mesajı görür; uzun sohbet geçmişi tutulmaz, sayfa kapanınca her şey silinir ve önceki oyunlar hatırlanmaz. Hafızayı uzatmak hem saldırı yüzeyini (uzun sohbette talimat ezme) hem kota maliyetini artıracağı için bilerek sınırladım. Ayrıca sesli giriş ve ekran okuyucu için gelişmiş anlatım yok.
 
+## The Primer v2: davranış modeli (Ödev 7)
+
+**Soru:** Tutor ne zaman konuşsun? Oyuncu bir karar ekranında 8 saniye seçim yapmazsa, davranışına bakan küçük bir model "riskli seçeneği (B) seçme olasılığı"nı tahmin eder. Olasılık eşiği (`config.json`: `karar_esigi`) geçerse tutor, oyuncu yazmadan, o karara ait tek bir düşündürücü soru sorar. Geçmezse susar. Model cevabı bilmez ve cevap vermez, sadece *ne zaman* sorulacağını belirler.
+
+- **Model:** `StandardScaler → LogisticRegression` (scikit-learn), `model.onnx` olarak dışa aktarıldı, tarayıcıda `onnxruntime-web` ile çalışır. Sunucu yok, veri cihazdan çıkmaz.
+- **Özellikler (8):** seviye, karar no, ilk etkileşim gecikmesi, ipucu kullanıldı mı, tutor mesaj sayısı, sekme terk sayısı, önceki panelde okuma süresi, önceki riskli seçim sayısı. Tanımlar: `data/SOZLUK.md`.
+- **Kabul eşiği (eğitimden önce, `spec.md` §11.2):** doğruluk ≥ çoğunluk sınıfı + 0,10 **ve** riskli seçim duyarlılığı ≥ 0,60, katılımcıya göre ayrılmış çapraz doğrulamada, yalnızca gerçek satırlarda. Geçmezse `train.py` durur, `model.onnx` yazılmaz. Eşik sonradan değiştirilmedi.
+- **Veri:** `data/oturumlar.csv`, `kaynak` sütunu `gercek` ya da `sentetik`. Gerçek oturumlar `?veri=1&grup=G1` ile toplandı (ad, kimlik, konum, tutor'a yazılan metin kaydedilmez, sadece sayılar). Sentetik satırlar `data/uret_sentetik.py` (tohum 13) ile üretilir. Sentetik kural bir **varsayımdır**, kanıt değildir, ağırlığı 0,3'tür ve değerlendirmeye girmez.
+- **Gerçek veri sayısı ve sonuç:** 3 katılımcı (G1, G2, G3), 31 kullanılabilir gerçek satır (kullanılabilir = tahmin anından önce, süre bitimi olmayan karar). Katılımcıya göre ayrılmış çapraz doğrulamada **doğruluk 0,42** (%95 güven aralığı 0,26–0,59), çoğunluk sınıfı tahmincisi 0,71, riskli seçim duyarlılığı 0,56. **Kabul eşiği sağlanmadı** (doğruluk çoğunluk + 0,10'dan düşük, duyarlılık 0,60'tan düşük), bu yüzden `train.py` `model.onnx` yazmadı ve **model yayınlanmadı**. Eşik eğitimden önce yazıldı ve düşürülmedi. Tutor, model olmadan Ödev 6'daki gibi yalnızca oyuncu yazınca konuşur.
+- **Elenen veri:** Bazı gelen oturum satırlarında karar süresi ile `erken_karar` bayrağı birbiriyle çelişiyordu ya da aynı değerler farklı oturum kimlikleriyle tekrar ediyordu. Bunlar elle değiştirilmiş ya da kopyalanmış göründüğü için eğitime ve değerlendirmeye alınmadı.
+
+### Kurulum (3 komut)
+```
+pip install -r requirements.txt
+python train.py
+npm install --legacy-peer-deps && npm run dev
+```
+`train.py` tek komutla veriyi okur, eşiği kontrol eder, `model.onnx` ve `config.json` yazar (tohum 13, aynı girdide aynı çıktı). Parite testi: `python tests/parite.py`.
+
+### Testler
+- **Parite (KÖ-9):** `tests/parite.json` içindeki 5 referans girdi hem Python'da hem uygulamadaki ONNX çıkarımında çalışır, fark < 1e-4. (`cypress/e2e/parite.cy.js`, sayfa: `?parite=1`.)
+- **Model davranışı (KÖ-7, KÖ-8):** `cypress/e2e/model.cy.js`, `?p_test=` kancasıyla olasılık sabitlenir.
+- **Regresyon:** Ödev 6'daki 8 yol, KÖ-1…KÖ-6 model devredeyken de geçer.
+
+### Yayın
+`RELEASE.md`: Shadow → Canary → Progressive açılım, geri alma, ödünleşim matrisi (ağ/gecikme, veri cihazdan çıkar mı, model gizliliği). Model: `<HF_MODEL_LINKI_COMMIT_PINLI>`.
+
+### Yapay zekâ araçları (beyan)
+- **Claude (Anthropic):** `<NE İÇİN KULLANDIM: örn. kod iskeleti, eğitim betiği, test taslağı>`
+- **`<DİĞER ARAÇ, varsa>`:** `<NE İÇİN>`
+- **Elle düzelttiklerim:** `<SEN YAZ: yapay zekânın hatalı ya da yetersiz yaptığı ve senin elle düzelttiğin 2–3 somut şey>`
+- **Kendi kararlarım:** konu seçimi ("Tutor ne zaman konuşsun"), kabul eşiği, hangi özelliklerin toplanacağı, sentetik verinin sadece varsayım olarak tutulması. `<kendi cümlenle düzenle>`
+
+### Kaynaklar
+Amershi ve ark. 2019, *Software Engineering for Machine Learning*; Mitchell ve ark. 2019, *Model Cards for Model Reporting*; Breck ve ark. 2017, *The ML Test Score*; ONNX Runtime ve Hugging Face Hub belgeleri.
+
 ## Lisans / not
 Eğitim amaçlı ödev. Kurum ve hasta adları kurgusaldır.
