@@ -10,6 +10,21 @@ import { IntroScreen } from './components/IntroScreen';
 import { SceneScreen } from './components/SceneScreen';
 import { EndingScreen } from './components/EndingScreen';
 import { askTutor } from './tutor/tutorService';
+import {
+  VERI_MODU,
+  oturumBaslat,
+  kararBasla,
+  secimYapildi,
+  devamEdildi,
+  ipucuKullanildi,
+  tutorMesajiGonderildi,
+  csvMetni,
+  satirSayisi,
+  sekizinciSaniyeyeKayit,
+} from './telemetry/collector';
+import { MODEL_AKTIF, olasilikRiskli, kararEsigi } from './model/predictor';
+
+const DEBUG = new URLSearchParams(window.location.search).get('debug') === '1';
 
 const INITIAL_CLOCK = '07:40';
 
@@ -59,6 +74,46 @@ export default function App() {
   ]);
   const [isTutorLoading, setIsTutorLoading] = useState<boolean>(false);
 
+  // Veri toplama modu (?veri=1): oturum sonunda gösterilen CSV satırları
+  const [veriCsv, setVeriCsv] = useState<string | null>(null);
+  const [kopyalandi, setKopyalandi] = useState<boolean>(false);
+
+  // Davranış modeli (spec.md bölüm 11): karar ekranının 8. saniyesinde p_riskli >= eşik ise
+  // tutor, oyuncu yazmadan, o karara ait düşündüren soruyu sorar. Değilse susar.
+  const [sonP, setSonP] = useState<number | null>(null);
+  const canliRef = useRef({ selectedOption, currentDecisionId, clock, screen });
+  canliRef.current = { selectedOption, currentDecisionId, clock, screen };
+
+  useEffect(() => {
+    if (!MODEL_AKTIF) return;
+    return sekizinciSaniyeyeKayit(async (f) => {
+      try {
+        const [p, esik] = await Promise.all([olasilikRiskli(f), kararEsigi()]);
+        setSonP(p);
+        const c = canliRef.current;
+        const ayniKarar = f.karar_no === Number(c.currentDecisionId.slice(1));
+        if (p >= esik && ayniKarar && c.screen === 'scene' && c.selectedOption === null) {
+          setTutorMessages((prev) => [
+            ...prev,
+            {
+              id: `model-${Date.now()}`,
+              sender: 'tutor',
+              text: DECISIONS[c.currentDecisionId].hint,
+              time: c.clock,
+            },
+          ]);
+        }
+      } catch {
+        // model yok ya da yüklenemedi: oyun normal devam eder, tutor kendiliğinden konuşmaz
+      }
+    });
+  }, []);
+
+  // Yeni karar/ekran açılınca sayfa en üstten başlasın (oynatma testinde bulunan sorun, KÖ-6)
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [screen, currentDecisionId]);
+
   // Initialize timer for a decision based on level
   const startTimerForDecision = useCallback(
     (lvl: Level) => {
@@ -93,6 +148,7 @@ export default function App() {
       const minuteAdvance = currentDef.options[option].minuteAdvance;
       const newClock = advanceClock(clock, minuteAdvance);
 
+      secimYapildi(option, timeoutTriggered);
       setSelectedOption(option);
       setIsTimeout(timeoutTriggered);
       setIsResultOpen(true);
@@ -152,6 +208,7 @@ export default function App() {
     setHintUsedThisDecision(false);
     setPreviousWhatText(null);
     setDecisions({ k1: null, k2: null, k3: null });
+    setVeriCsv(null);
 
     setTutorMessages([
       {
@@ -162,6 +219,8 @@ export default function App() {
       },
     ]);
 
+    oturumBaslat(level, role, goal);
+    kararBasla('k1');
     startTimerForDecision(level);
   };
 
@@ -172,6 +231,8 @@ export default function App() {
     const currentDef = DECISIONS[currentDecisionId];
     const whatText = currentDef.options[selectedOption].what(clock);
 
+    devamEdildi();
+
     if (currentDecisionId === 'k1') {
       setCurrentDecisionId('k2');
       setSelectedOption(null);
@@ -179,6 +240,7 @@ export default function App() {
       setIsTimeout(false);
       setHintUsedThisDecision(false);
       setPreviousWhatText(whatText);
+      kararBasla('k2');
       if (level) startTimerForDecision(level);
     } else if (currentDecisionId === 'k2') {
       setCurrentDecisionId('k3');
@@ -187,9 +249,11 @@ export default function App() {
       setIsTimeout(false);
       setHintUsedThisDecision(false);
       setPreviousWhatText(whatText);
+      kararBasla('k3');
       if (level) startTimerForDecision(level);
     } else {
       // k3 finished -> go to ending
+      setVeriCsv(VERI_MODU ? csvMetni() : null);
       setScreen('ending');
     }
   };
@@ -203,6 +267,7 @@ export default function App() {
     const hintQuestion = currentDef.hint;
 
     setHintUsedThisDecision(true);
+    ipucuKullanildi();
     setTutorMessages((prev) => [
       ...prev,
       {
@@ -223,6 +288,7 @@ export default function App() {
       time: clock,
     };
 
+    tutorMesajiGonderildi();
     setTutorMessages((prev) => [...prev, playerMsg]);
     setIsTutorLoading(true);
 
@@ -266,6 +332,8 @@ export default function App() {
     setIsTimeout(false);
     setHintUsedThisDecision(false);
     setPreviousWhatText(null);
+    setVeriCsv(null);
+    setKopyalandi(false);
   };
 
   // Retry with same profile at K1
@@ -284,6 +352,7 @@ export default function App() {
     setIsTimeout(false);
     setHintUsedThisDecision(false);
     setPreviousWhatText(null);
+    setVeriCsv(null);
 
     setTutorMessages([
       {
@@ -294,6 +363,8 @@ export default function App() {
       },
     ]);
 
+    oturumBaslat(level, role, goal);
+    kararBasla('k1');
     startTimerForDecision(level);
   };
 
@@ -333,6 +404,24 @@ export default function App() {
             LabLink Krizi · Akasya Tıp Merkezi
           </p>
         </header>
+
+        {DEBUG && sonP !== null && (
+          <div data-testid="model-p" data-cy="p" className="mb-2 font-mono text-[11px] text-[#4A5F5C]">
+            {sonP}
+          </div>
+        )}
+
+        {VERI_MODU && screen === 'intro' && (
+          <div
+            data-testid="veri-banner"
+            className="mb-3 rounded-[10px] border border-[#C9D6D3] bg-[#FFF8E6] px-3 py-2 text-[13px] leading-[19px] text-[#5C4A12]"
+          >
+            <strong>Veri toplama modu.</strong> Süreler, tıklama sayıları ve seçimlerin bu cihazda
+            hesaplanır. Adın, kimliğin, konumun ve tutor&apos;a yazdığın metin kaydedilmez, hiçbir
+            şey sunucuya gönderilmez. Oyun bitince sana bir CSV satırı gösterilir; paylaşmak
+            istersen sen gönderirsin.
+          </div>
+        )}
 
         {/* View Router */}
         {screen === 'intro' && (
@@ -383,6 +472,43 @@ export default function App() {
             onReplay={handleReplay}
             onRetryPath={handleRetryPath}
           />
+        )}
+
+        {screen === 'ending' && VERI_MODU && veriCsv && (
+          <section
+            data-testid="veri-panel"
+            className="mt-3 rounded-[12px] border border-[#C9D6D3] bg-white p-3.5"
+          >
+            <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-[#0B6E69]">
+              Veri toplama modu · {satirSayisi()} satır
+            </h2>
+            <p className="mt-1 text-[13px] leading-[19px] text-[#4A5F5C]">
+              Bu oturumun davranış verisi aşağıda. Kopyalayıp bana gönderirsen eğitim verisine
+              eklenir; göndermek zorunda değilsin.
+            </p>
+            <textarea
+              readOnly
+              data-testid="veri-csv"
+              value={veriCsv}
+              rows={6}
+              className="mt-2 w-full rounded-md border border-[#C9D6D3] bg-[#F4F7F6] p-2 font-mono text-[11px] leading-[16px]"
+            />
+            <button
+              type="button"
+              data-testid="veri-kopyala"
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(veriCsv);
+                  setKopyalandi(true);
+                } catch {
+                  setKopyalandi(false);
+                }
+              }}
+              className="mt-2 w-full rounded-md bg-[#0B6E69] px-3 py-2 text-[14px] font-semibold text-white"
+            >
+              {kopyalandi ? 'Kopyalandı' : 'CSV satırlarını kopyala'}
+            </button>
+          </section>
         )}
       </main>
     </div>

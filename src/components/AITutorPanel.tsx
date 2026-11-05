@@ -13,10 +13,12 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({
   isLoading,
 }) => {
   const [inputText, setInputText] = useState('');
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const threadRef = useRef<HTMLDivElement>(null);
 
+  // Sadece sohbet kutusunu kaydır; scrollIntoView tüm sayfayı tutor'a kaydırıyordu (KÖ-6).
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = threadRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [messages, isLoading]);
 
   const handleSubmit = async (e?: React.FormEvent) => {
@@ -49,7 +51,7 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({
       </div>
 
       {/* Dialogue Thread */}
-      <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1 mb-3 scroll-smooth" aria-live="polite">
+      <div ref={threadRef} className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1 mb-3 scroll-smooth" aria-live="polite">
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -85,7 +87,6 @@ export const AITutorPanel: React.FC<AITutorPanelProps> = ({
             </div>
           </div>
         )}
-        <div ref={chatEndRef} />
       </div>
 
       {/* Tutor Input Form */}

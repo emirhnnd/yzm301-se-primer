@@ -150,3 +150,66 @@ Tutor ayrıca **aşırı red** vermemelidir: masum bir soruya ("risk ne demek?")
 ## 10. Kaynaklar
 
 6698 sayılı KVKK (m.6, m.12) · Sommerville, *Software Engineering* (10. b., Böl. 5) · Stephenson, *The Diamond Age* (1995) · GitHub Spec Kit
+
+## 11. The Primer v2: davranış modeli (Ödev 7)
+
+> Bu bölüm model eğitilmeden **önce** yazıldı. Eşik sonradan değiştirilmez. Eşiği geçmeyen model yayınlanmaz.
+
+### 11.1 Model gereksinimi
+
+**Soru:** Oyuncu bir karar ekranındayken, davranışına bakarak riskli seçeneği (B) seçme olasılığı nedir? Olasılık yüksekse tutor, oyuncu yazmadan, düşündüren **tek bir soru** sorar. Düşükse susar.
+
+**Tahmin anı:** Karar ekranı açıldıktan **8 saniye sonra**. Oyuncu 8 saniyeden önce seçim yaptıysa modele sorulmaz; satır CSV'ye `erken_karar=1` ile yazılır, eğitime ve eval'e girmez. Seçimi süre bitimi yaptıysa (Deneyimli seviyede otomatik B) satır `zaman_asimi=1` ile yazılır ve aynı şekilde eğitim ve eval dışında kalır, çünkü o etiket oyuncunun davranışı değildir.
+
+**Özellikler (hepsi tahmin anından önce ölçülür, seçimden gelen bilgi içermez):**
+
+| Özellik | Tanım | Birim |
+|---|---|---|
+| `seviye` | 0 Yeni, 1 Biraz, 2 Deneyimli | sayı |
+| `karar_no` | 1, 2 veya 3 | sayı |
+| `ilk_etkilesim_gecikme_sn` | Ekran açılışından ilk dokunma/kaydırmaya geçen süre (8 ile sınırlı) | saniye |
+| `ipucu_kullanildi` | Bu kararda ipucu butonu kullanıldı mı | 0/1 |
+| `tutor_mesaj_sayisi` | Bu kararda tutor'a yazılan mesaj sayısı | sayı |
+| `sekme_terk_sayisi` | Oturumda sekmenin arka plana düştüğü kez sayısı (içerik değil, sadece sayı) | sayı |
+| `onceki_panel_okuma_sn` | Önceki kararın "Neden oldu" panelinde geçen süre (ilk kararda 0) | saniye |
+| `onceki_riskli_sayisi` | Önceki kararlardan kaçında B seçildi | sayı |
+
+**Etiket:** `riskli_secim` = 1 oyuncu bu kararda B seçtiyse, aksi halde 0.
+
+**Model:** Lojistik regresyon, `sklearn → ONNX`, tohum 13. Çıktı: `[p_guvenli, p_riskli]`.
+
+**Oyundaki etkisi:** `p_riskli ≥ karar_esigi` ise (başlangıç 0,5, `config.json`'da) tutor kendiliğinden, o karara ait ipucu sorusunu gösterir. Değilse tutor kendiliğinden bir şey yazmaz.
+
+### 11.2 Eval metriği ve kabul eşiği (altın standart)
+
+**Doğrulama yöntemi:** Katılımcı grubuna göre ayrılmış çapraz doğrulama (`grup` sütunu: her katılımcıya rastgele harf, ad veya kimlik değil). Değerlendirme **yalnızca `kaynak=gercek` satırlarında** yapılır. Sentetik satırlar eğitimde kullanılabilir, eval'e girmez.
+
+**Kabul eşiği (ikisi birden sağlanmalı):**
+1. Doğruluk, çoğunluk sınıfını hep tahmin eden modelin doğruluğundan **en az 0,10 yüksek**.
+2. Riskli seçim için duyarlılık (recall) **≥ 0,60**.
+
+`train.py` bu eşiklerden biri sağlanmazsa hata verip durur, `model.onnx` yazılmaz.
+
+**Asgari veri:** Eğitim ve eval'e girebilen (erken_karar=0, zaman_asimi=0) en az **30 gerçek satır** yoksa `train.py` durur ve model yayınlanmaz.
+
+**Dürüstlük notu:** Beklenen veri yaklaşık 45 satır (15 oturum × 3 karar). Bu çok küçüktür. Eşik bu yüzden ılımlı tutuldu ve güven aralığı raporlanacaktır. Geçilemezse eşik düşürülmez; daha fazla gerçek oturum toplanır.
+
+### 11.3 Yeni kabul örnekleri
+
+| # | Koşul (Given / When) | Beklenen (Then) |
+|---|---|---|
+| **KÖ-7** | Oyuncu karar ekranında 8 saniye seçim yapmaz ve model `p_riskli ≥ karar_esigi` verir | Tutor paneline, oyuncu yazmadan, `?` içeren tek bir ipucu sorusu eklenir ve soru seçenek harfi içermez |
+| **KÖ-8** | Aynı durumda model `p_riskli < karar_esigi` verir | Tutor paneline kendiliğinden yeni mesaj eklenmez |
+| **KÖ-9** | `tests/parite.json` içindeki 5 referans girdi, hem Python test kahinine (`tests/parite.py`) hem uygulamadaki ONNX çıkarımına verilir | Her girdide iki olasılık arasındaki fark **1e-4'ten küçüktür** |
+
+**Regresyon:** KÖ-1…KÖ-5 ve sekiz yolun Cypress testleri model devreye girdikten sonra da kırılmadan geçmelidir.
+
+### 11.4 Veri toplama modu ve gizlilik
+
+- Uygulamaya `?veri=1` ile açılan bir veri toplama modu eklenir. Oyuncuya, başlamadan önce neyin kaydedildiği (süreler, tıklama sayıları, seçimler) tek cümleyle gösterilir.
+- Oturum kimliği rastgele üretilir. Ad, e-posta, cihaz kimliği, konum, tutor'a yazılan mesajın **içeriği** kaydedilmez, sadece mesaj sayısı kaydedilir.
+- Veri tarayıcıda biriktirilir ve oturum sonunda CSV satırı olarak oyuncuya gösterilir, oyuncu isterse gönderir. Sunucuya otomatik gönderim yoktur.
+- **Veri toplama modunda (`?veri=1`) model kapalıdır.** Model müdahale ederse oyuncunun davranışı değişir ve etiket modelin kendi etkisiyle kirlenir (geri besleme döngüsü). Eğitim verisi yalnızca model kapalıyken toplanır.
+- **Test kancaları:** `?p_test=0.9` model yerine sabit olasılık verir (KÖ-7/KÖ-8 için). `?parite=1&x=...` verilen özellik vektörü için ONNX olasılığını `data-cy="p"` içinde gösterir (KÖ-9 için).
+
+**Düzeltme kaydı (1 Kasım, eğitimden önce):** `zaman_asimi` dışlaması, asgari 30 gerçek satır koşulu ve veri modunda modelin kapalı olması bu bölüme eğitimden ÖNCE eklendi. Kabul eşikleri (0,10 ve 0,60) değişmedi.
